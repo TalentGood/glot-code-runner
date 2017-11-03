@@ -3,7 +3,6 @@ package java
 import (
 	"github.com/prasmussen/glot-code-runner/cmd"
 	"path/filepath"
-	"fmt"
 )
 
 func Run(files []string, stdin string) (string, string, error, int64, int64) {
@@ -14,8 +13,6 @@ func Run(files []string, stdin string) (string, string, error, int64, int64) {
 	if err != nil {
 		return stdout, stderr, err, elapsedTime, usedMemory
 	}
-	fmt.Println("PASSSSSSSSSED")
-
 	return cmd.RunStdin(workDir, stdin, "java", className(fname))
 }
 
