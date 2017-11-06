@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 	"syscall"
+	"fmt"
 )
 
 func Run(workDir string, args ...string) (string, string, error, int64, int64) {
@@ -13,15 +14,41 @@ func Run(workDir string, args ...string) (string, string, error, int64, int64) {
 }
 
 func RunStdin(workDir, stdin string, args ...string) (string, string, error, int64, int64) {
+
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
+
+
+	// Limit execution time in seconds
+	var rTimeLimit syscall.Rlimit
+
+	rTimeLimit.Max = 3
+	rTimeLimit.Cur = 3
+
+	err := syscall.Setrlimit(syscall.RLIMIT_CPU, &rTimeLimit)
+
+	if err != nil {
+		fmt.Println("Error Setting Rlimit ", err)
+	}
+
+	// Limit allocated memory
+	//var rMemoryLimit syscall.Rlimit
+	//
+	//rMemoryLimit.Max = 80000
+	//rMemoryLimit.Cur = 80000
+	//
+	//err = syscall.Setrlimit(0x9, &rMemoryLimit)
+	//
+	//if err != nil {
+	//	fmt.Println("Error Setting Rlimit ", err)
+	//}
 
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Dir = workDir
 	cmd.Stdin = strings.NewReader(stdin)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	err := cmd.Run()
+	err = cmd.Run()
 	start := time.Now()
 	cmd.Wait()
 	elapsedTime := int64(time.Since(start))
