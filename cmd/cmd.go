@@ -8,16 +8,11 @@ import (
 	"syscall"
 )
 
-type TimeLimitError string
-type OutputLimitError string
-
-func (e TimeLimitError) Error() string {
-	return string(e)
-}
-
-func (e OutputLimitError) Error() string {
-	return string(e)
-}
+//type TimeLimitError string
+//
+//func (e TimeLimitError) Error() string {
+//	return string(e)
+//}
 
 func Run(workDir string, args ...string) (string, string, error, int64, int64) {
 	return RunStdin(workDir, "", args...)
@@ -41,11 +36,12 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	timer = time.AfterFunc(1 * time.Second, func() {
 		timer.Stop()
 		cmd.Process.Signal(syscall.SIGKILL)
-		err = TimeLimitError("Time Limit Exceeded")
+		message := "Time limit exceeded"
+		stderr.Grow(len(message))
+		stderr.Write([]byte(message))
 	})
 
 	cmd.Wait()
-	timer.Stop()
 
 	elapsedTime := int64(time.Since(start))
 
@@ -55,9 +51,14 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 		usedMemory = cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss
 	}
 
+	if len(stderr.String()) != 0 {
+		stdout.Reset();
+	}
+
 	if len(stdout.String()) > 9999999 {
-		stdout.Reset()
-		err = OutputLimitError("Output limit exceeded")
+		message := "Output limit exceeded"
+		stderr.Grow(len(message))
+		stderr.Write([]byte(message))
 	}
 
 	return stdout.String(), stderr.String(), err, elapsedTime, usedMemory
