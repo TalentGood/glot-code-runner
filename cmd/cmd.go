@@ -36,9 +36,10 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	timer = time.AfterFunc(1 * time.Second, func() {
 		timer.Stop()
 		cmd.Process.Signal(syscall.SIGKILL)
-		message := "Time limit exceeded"
+		var message = "Time limit exceeded"
 		stderr.Grow(len(message))
 		stderr.Write([]byte(message))
+		stdout.Reset();
 	})
 
 	cmd.Wait()
@@ -56,9 +57,10 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	}
 
 	if len(stdout.String()) > 9999999 {
-		message := "Output limit exceeded"
+		var message = "Output limit exceeded"
 		stderr.Grow(len(message))
 		stderr.Write([]byte(message))
+		stdout.Reset();
 	}
 
 	return stdout.String(), stderr.String(), err, elapsedTime, usedMemory
