@@ -9,8 +9,13 @@ import (
 )
 
 type TimeLimitError string
+type OutputLimitError string
 
 func (e TimeLimitError) Error() string {
+	return string(e)
+}
+
+func (e OutputLimitError) Error() string {
 	return string(e)
 }
 
@@ -33,7 +38,7 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 
 	var timer *time.Timer
 
-	timer = time.AfterFunc(2 * time.Second, func() {
+	timer = time.AfterFunc(1 * time.Second, func() {
 		timer.Stop()
 		cmd.Process.Signal(syscall.SIGKILL)
 		err = TimeLimitError("Time Limit Exceeded")
@@ -51,10 +56,8 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	}
 
 	if len(stdout.String()) > 9999999 {
-		var message string = "Output limit exceeded";
 		stdout.Reset()
-		stderr.Grow(len(message))
-		stderr.Write([]byte(message))
+		err = OutputLimitError("Output limit exceeded")
 	}
 
 	return stdout.String(), stderr.String(), err, elapsedTime, usedMemory
