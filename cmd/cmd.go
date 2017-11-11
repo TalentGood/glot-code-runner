@@ -22,6 +22,8 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
+	var timer *time.Timer
+	var usedMemory int64
 
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Dir = workDir
@@ -29,39 +31,42 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	start := time.Now()
-	err := cmd.Start()
 
-	var timer *time.Timer
-
-	timer = time.AfterFunc(1 * time.Second, func() {
-		timer.Stop()
+	////////////////////////////////////////
+	// Check TLE
+	timer = time.AfterFunc(3 * time.Second, func() {
 		cmd.Process.Signal(syscall.SIGKILL)
 		var message = "Time limit exceeded"
 		stderr.Grow(len(message))
 		stderr.Write([]byte(message))
 		stdout.Reset();
+		timer.Stop()
 	})
+	////////////////////////////////////////
 
-	cmd.Wait()
+	err := cmd.Run()
+	timer.Stop()
 
+	////////////////////////////////////////
+	// Get ElapsedTime and Memory Used
 	elapsedTime := int64(time.Since(start))
-
-	var usedMemory int64;
-
 	if cmd.ProcessState != nil {
 		usedMemory = cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss
 	}
+	////////////////////////////////////////
 
+	////////////////////////////////////////
+	// Check output limit exceeded
 	if len(stderr.String()) != 0 {
 		stdout.Reset();
 	}
-
 	if len(stdout.String()) > 9999999 {
 		var message = "Output limit exceeded"
 		stderr.Grow(len(message))
 		stderr.Write([]byte(message))
 		stdout.Reset();
 	}
+	////////////////////////////////////////
 
 	return stdout.String(), stderr.String(), err, elapsedTime, usedMemory
 }
