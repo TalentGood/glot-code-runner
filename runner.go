@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/prasmussen/glot-code-runner/cmd"
-	"github.com/prasmussen/glot-code-runner/language"
+	"./cmd"
+	"./language"
 	"io/ioutil"
 	"os"
 	"path/filepath"
