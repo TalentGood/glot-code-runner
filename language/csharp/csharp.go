@@ -1,8 +1,8 @@
 package csharp
 
 import (
-	"github.com/prasmussen/glot-code-runner/cmd"
-	"github.com/prasmussen/glot-code-runner/util"
+	"../../cmd"
+	"../../util"
 	"path/filepath"
 )
 

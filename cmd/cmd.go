@@ -14,18 +14,18 @@ import (
 //	return string(e)
 //}
 
-func Run(workDir string, args ...string) (string, string, error, int64, int64) {
-	return RunStdin(workDir, "", args...)
+func Run(workDir string, maxTimeout int64, args ...string) (string, string, error, int64, int64) {
+	return RunStdin(workDir, "", maxTimeout, args...)
 }
 
-func RunStdin(workDir, stdin string, args ...string) (string, string, error, int64, int64) {
+func RunStdin(workDir, stdin string, maxTimeout int64, args ...string) (string, string, error, int64, int64) {
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	var timer *time.Timer
 	var usedMemory int64
 
-	cmd := exec.Command(args[1], args[2:]...)
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Dir = workDir
 	cmd.Stdin = strings.NewReader(stdin)
 	cmd.Stdout = &stdout
@@ -34,7 +34,7 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 
 	////////////////////////////////////////
 	// Check TLE
-	timer = time.AfterFunc(args[0] * time.Second, func() {
+	timer = time.AfterFunc(time.Duration(maxTimeout) * time.Second, func() {
 		cmd.Process.Signal(syscall.SIGKILL)
 		var message = "Time limit exceeded"
 		stderr.Grow(len(message))
@@ -71,10 +71,10 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	return stdout.String(), stderr.String(), err, elapsedTime, usedMemory
 }
 
-func RunBash(workDir, command string) (string, string, error, int64, int64) {
-	return Run(workDir, "bash", "-c", command)
+func RunBash(workDir string, maxTimeout int64, command string) (string, string, error, int64, int64) {
+	return Run(workDir, maxTimeout, "bash", "-c", command)
 }
 
-func RunBashStdin(workDir, command, stdin string) (string, string, error, int64, int64) {
-	return RunStdin(workDir, stdin, "bash", "-c", command)
+func RunBashStdin(workDir string, maxTimeout int64, command, stdin string) (string, string, error, int64, int64) {
+	return RunStdin(workDir, stdin, maxTimeout, "bash", "-c", command)
 }

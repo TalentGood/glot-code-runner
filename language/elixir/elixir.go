@@ -1,14 +1,14 @@
 package elixir
 
 import (
-	"github.com/prasmussen/glot-code-runner/cmd"
-	"github.com/prasmussen/glot-code-runner/util"
+	"../../cmd"
+	"../../util"
 	"path/filepath"
 )
 
-func Run(files []string, stdin string) (string, string, error, int64, int64) {
+func Run(files []string, maxTimeout int64, stdin string) (string, string, error, int64, int64) {
 	workDir := filepath.Dir(files[0])
 	sourceFiles := util.FilterByExtension(files, "ex")
 	args := append([]string{"elixirc"}, sourceFiles...)
-	return cmd.RunStdin(workDir, stdin, args...)
+	return cmd.RunStdin(workDir, stdin, maxTimeout, args...)
 }

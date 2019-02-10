@@ -1,21 +1,21 @@
 package kotlin
 
 import (
-	"github.com/prasmussen/glot-code-runner/cmd"
+	"../../cmd"
 	"path/filepath"
 	"strings"
 )
 
-func Run(files []string, stdin string) (string, string, error, int64, int64) {
+func Run(files []string, maxTimeout int64, stdin string) (string, string, error, int64, int64) {
 	workDir := filepath.Dir(files[0])
 	fname := filepath.Base(files[0])
 
-	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, "kotlinc", fname)
+	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, maxTimeout, "kotlinc", fname)
 	if err != nil {
 		return stdout, stderr, err, elapsedTime, usedMemory
 	}
 
-	return cmd.RunStdin(workDir, stdin, "kotlin", className(fname))
+	return cmd.RunStdin(workDir, stdin, maxTimeout, "kotlin", className(fname))
 }
 
 func className(fname string) string {

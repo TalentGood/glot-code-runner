@@ -1,24 +1,24 @@
 package ocaml
 
 import (
-	"github.com/prasmussen/glot-code-runner/cmd"
-	"github.com/prasmussen/glot-code-runner/util"
+	"../../cmd"
+	"../../util"
 	"path/filepath"
 )
 
-func Run(files []string, stdin string) (string, string, error, int64, int64) {
+func Run(files []string, maxTimeout int64, stdin string) (string, string, error, int64, int64) {
 	workDir := filepath.Dir(files[0])
 	binName := "a"
 
 	sourceFiles := reverse(util.FilterByExtension(files, "ml"))
 	args := append([]string{"ocamlc", "-o", binName}, sourceFiles...)
-	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, args...)
+	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, maxTimeout, args...)
 	if err != nil {
 		return stdout, stderr, err, elapsedTime, usedMemory
 	}
 
 	binPath := filepath.Join(workDir, binName)
-	return cmd.RunStdin(workDir, stdin, binPath)
+	return cmd.RunStdin(workDir, stdin, maxTimeout, binPath)
 }
 
 func reverse(files []string) []string {

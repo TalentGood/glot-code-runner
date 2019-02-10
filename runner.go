@@ -66,7 +66,7 @@ func main() {
 		stdout, stderr, err, elapsedTime, usedMemory = language.Run(payload.Language, payload.MaxTimeout, filepaths, payload.Stdin)
 	} else {
 		workDir := filepath.Dir(filepaths[0])
-		stdout, stderr, err, elapsedTime, usedMemory = cmd.RunBashStdin(workDir, payload.Command, payload.Stdin)
+		stdout, stderr, err, elapsedTime, usedMemory = cmd.RunBashStdin(workDir, payload.MaxTimeout, payload.Command, payload.Stdin)
 	}
 
 	printResult(stdout, stderr, err, elapsedTime, usedMemory)

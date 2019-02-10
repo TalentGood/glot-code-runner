@@ -1,12 +1,12 @@
 package typescript
 
 import (
-	"github.com/prasmussen/glot-code-runner/cmd"
-	"github.com/prasmussen/glot-code-runner/util"
+	"../../cmd"
+	"../../util"
 	"path/filepath"
 )
 
-func Run(files []string, stdin string) (string, string, error, int64, int64) {
+func Run(files []string, maxTimeout int64, stdin string) (string, string, error, int64, int64) {
 	workDir := filepath.Dir(files[0])
 	jsName := "a.js"
 
@@ -15,10 +15,10 @@ func Run(files []string, stdin string) (string, string, error, int64, int64) {
 	args := append([]string{"tsc", "-out", jsName}, sourceFiles...)
 
 	// Compile to javascript
-	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, args...)
+	stdout, stderr, err, elapsedTime, usedMemory := cmd.Run(workDir, maxTimeout, args...)
 	if err != nil {
 		return stdout, stderr, err, elapsedTime, usedMemory
 	}
 
-	return cmd.RunStdin(workDir, stdin, "node", jsName)
+	return cmd.RunStdin(workDir, stdin, maxTimeout, "node", jsName)
 }
