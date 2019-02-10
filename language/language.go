@@ -85,6 +85,6 @@ func IsSupported(lang string) bool {
 	return supported
 }
 
-func Run(lang string, files []string, stdin string) (string, string, error, int64, int64) {
-	return languages[lang](files, stdin)
+func Run(lang string, maxTimeout int64, files []string, stdin string) (string, string, error, int64, int64) {
+	return languages[lang](files, maxTimeout, stdin)
 }

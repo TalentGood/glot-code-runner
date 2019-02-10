@@ -62,7 +62,7 @@ func main() {
 	// Execute the given command or run the code with
 	// the language runner if no command is given
 	if payload.Command == "" {
-		stdout, stderr, err, elapsedTime, usedMemory = language.Run(payload.Language, filepaths, payload.Stdin)
+		stdout, stderr, err, elapsedTime, usedMemory = language.Run(payload.Language, payload.MaxTimeout, filepaths, payload.Stdin)
 	} else {
 		workDir := filepath.Dir(filepaths[0])
 		stdout, stderr, err, elapsedTime, usedMemory = cmd.RunBashStdin(workDir, payload.Command, payload.Stdin)

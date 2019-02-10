@@ -25,7 +25,7 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 	var timer *time.Timer
 	var usedMemory int64
 
-	cmd := exec.Command(args[0], args[1:]...)
+	cmd := exec.Command(args[1], args[2:]...)
 	cmd.Dir = workDir
 	cmd.Stdin = strings.NewReader(stdin)
 	cmd.Stdout = &stdout
@@ -34,7 +34,7 @@ func RunStdin(workDir, stdin string, args ...string) (string, string, error, int
 
 	////////////////////////////////////////
 	// Check TLE
-	timer = time.AfterFunc(3 * time.Second, func() {
+	timer = time.AfterFunc(args[0] * time.Second, func() {
 		cmd.Process.Signal(syscall.SIGKILL)
 		var message = "Time limit exceeded"
 		stderr.Grow(len(message))

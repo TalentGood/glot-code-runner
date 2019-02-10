@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func Run(files []string, stdin string) (string, string, error, int64, int64) {
+func Run(files []string, maxTimeout int64, stdin string) (string, string, error, int64, int64) {
 	workDir := filepath.Dir(files[0])
-	return cmd.RunStdin(workDir, stdin, "ruby", files[0])
+	return cmd.RunStdin(workDir, stdin, maxTimeout, "ruby", files[0])
 }
