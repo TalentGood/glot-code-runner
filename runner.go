@@ -15,6 +15,7 @@ type Payload struct {
 	Files    []*InMemoryFile `json:"files"`
 	Stdin    string          `json:"stdin"`
 	Command  string          `json:"command"`
+	MaxTimeout int64	 `json:"maxTimeout"`
 }
 
 type InMemoryFile struct {
